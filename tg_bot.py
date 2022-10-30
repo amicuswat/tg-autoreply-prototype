@@ -4,7 +4,6 @@ from datetime import datetime
 from telegram.client import Telegram
 from dotenv import load_dotenv
 
-
 SHEDULE = {
     1: '8:00 - 18:00',
     2: '8:00 - 18:00',
@@ -13,6 +12,8 @@ SHEDULE = {
     5: '18:00 - 22:00',
     6: '',
     7: ''}
+
+REPLY = 'Текст ответа'
 
 
 def is_working_time():
@@ -23,32 +24,24 @@ def is_working_time():
     work_start = datetime.strptime(work_start.strip(), '%H:%M').time()
     work_stop = datetime.strptime(work_stop.strip(), '%H:%M').time()
     time_now = datetime.now().time()
-    if work_start <= time_now and work_stop >= time_now:
-        return True
-    else:
-        return False
+    return work_start <= time_now <= work_stop
 
 
 def replier_handler(update):
-    if not is_working_time():
+    if not update['message']['is_outgoing'] and not is_working_time():
         chat_id = update['message']['chat_id']
-        if update['message']['content'].get('text'):
-            message_text = update['message']['content']['text'].get('text')
-        else:
-            message_text = ''
-        reply = 'Занят, отвечу позже.'
-        if message_text and message_text.lower() != reply.lower():
-            tg.send_message(chat_id=chat_id, text=reply)
+
+        tg.send_message(chat_id=chat_id, text=REPLY)
 
 
 if __name__ == '__main__':
     load_dotenv()
 
     tg = Telegram(
-        api_id=os.getenv('TG_API_ID'),
-        api_hash=os.getenv('TG_API_HASH'),
-        phone=os.getenv('PHONE_NUMBER'),
-        database_encryption_key=os.getenv('DB_ENCRYPTION_KEY'),
+        api_id=os.environ['TG_API_ID'],
+        api_hash=os.environ['TG_API_HASH'],
+        phone=os.environ['PHONE_NUMBER'],
+        database_encryption_key=os.environ['DB_ENCRYPTION_KEY'],
     )
     tg.login()
 
