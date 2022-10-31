@@ -15,7 +15,16 @@ SHEDULE = {
     6: '',
     7: ''}
 
-REPLY = 'Текст ответа'
+REPLY = '''
+Здравствуйте!). 
+В Будни дни с 18:00 до 10:00 утра (МСК) - Ответ будет не таким оперативным.
+
+В субботу и воскресенье - Ответы тоже могут быть не такими быстрыми.
+
+Но не переживайте, мы вам обязательно ответим!
+И в будущем ответы будут быстрее, качественнее и без выходных.
+'''
+
 DELAY_HOURS = 12
 
 messages_cache = {}
@@ -61,7 +70,7 @@ def replier_handler(update):
         return
 
     messages_cache[user_id] = now_time
-    
+
     chat_id = update['message']['chat_id']
 
     tg.send_message(chat_id=chat_id, text=REPLY)
