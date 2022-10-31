@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+import pytz
 from telegram.client import Telegram
 from dotenv import load_dotenv
 
@@ -23,8 +24,11 @@ def is_working_time():
     work_start, work_stop = SHEDULE[week_day].split('-')
     work_start = datetime.strptime(work_start.strip(), '%H:%M').time()
     work_stop = datetime.strptime(work_stop.strip(), '%H:%M').time()
-    time_now = datetime.now().time()
-    return work_start <= time_now <= work_stop
+
+    timezone = pytz.timezone(os.environ['TIMEZONE'])
+    tz_aware_time = datetime.now().astimezone(timezone).time()
+
+    return work_start <= tz_aware_time <= work_stop
 
 
 def replier_handler(update):
