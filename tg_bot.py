@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 
 import pytz
-from telegram.client import Telegram
 from telethon import TelegramClient, events
 from dotenv import load_dotenv
 
