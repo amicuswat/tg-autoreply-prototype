@@ -73,7 +73,6 @@ if __name__ == '__main__':
     client.start(phone=os.environ['PHONE_NUMBER'])
 
     with client:
-        print(client.is_connected())
         client.add_event_handler(test_replyer)
         client.run_until_disconnected()
 
