@@ -4,6 +4,7 @@ from datetime import timedelta
 
 import pytz
 from telegram.client import Telegram
+from telethon import TelegramClient, events
 from dotenv import load_dotenv
 
 SHEDULE = {
@@ -76,19 +77,36 @@ def replier_handler(update):
     tg.send_message(chat_id=chat_id, text=REPLY)
 
 
+@events.register(events.NewMessage(outgoing=True))
+async def test_replyer(event):
+    if is_working_time():
+        return
+        
+    user_id = event.message.sender_id
+    now_time = datetime.now()
+    delta = timedelta(hours=DELAY_HOURS)
+
+    if not user_id in messages_cache:
+        messages_cache[user_id] = now_time
+        return await event.reply(REPLY)
+
+    should_send_message = (now_time - messages_cache[user_id]) > delta
+
+    if not should_send_message:
+        return
+    
+    messages_cache[user_id] = now_time
+
+    await event.reply(REPLY)
+
 if __name__ == '__main__':
     load_dotenv()
 
-    tg = Telegram(
-        api_id=os.environ['TG_API_ID'],
-        api_hash=os.environ['TG_API_HASH'],
-        phone=os.environ['PHONE_NUMBER'],
-        database_encryption_key=os.environ['DB_ENCRYPTION_KEY'],
-    )
-    tg.login()
+    client = TelegramClient('test_session', api_id=os.environ['TG_API_ID'], api_hash=os.environ['TG_API_HASH'])
+    client.start(phone=os.environ['PHONE_NUMBER'])
 
-    # if this is the first run, library needs to preload all chats
-    # otherwise the message will not be sent
-    tg.add_message_handler(replier_handler)
+    with client:
+        print(client.is_connected())
+        client.add_event_handler(test_replyer)
+        client.run_until_disconnected()
 
-    tg.idle()
