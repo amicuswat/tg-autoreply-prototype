@@ -44,38 +44,6 @@ def is_working_time():
     return work_start <= tz_aware_time <= work_stop
 
 
-
-def replier_handler(update):
-    if update['message']['is_outgoing']:
-        return
-
-    if is_working_time():
-        return
-
-    user_id = update['message']['sender_id']['user_id']
-    now_time = datetime.now()
-    delta = timedelta(hours=DELAY_HOURS)
-
-    if not user_id in messages_cache:
-        messages_cache[user_id] = now_time
-
-        chat_id = update['message']['chat_id']
-        tg.send_message(chat_id=chat_id, text=REPLY)
-
-        return
-
-    should_send_message = (now_time - messages_cache[user_id]) > delta
-
-    if not should_send_message:
-        return
-
-    messages_cache[user_id] = now_time
-
-    chat_id = update['message']['chat_id']
-
-    tg.send_message(chat_id=chat_id, text=REPLY)
-
-
 @events.register(events.NewMessage(incoming=True))
 async def test_replyer(event):
     if is_working_time():
