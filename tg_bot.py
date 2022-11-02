@@ -76,7 +76,7 @@ def replier_handler(update):
     tg.send_message(chat_id=chat_id, text=REPLY)
 
 
-@events.register(events.NewMessage(outgoing=True))
+@events.register(events.NewMessage(incoming=True))
 async def test_replyer(event):
     if is_working_time():
         return
