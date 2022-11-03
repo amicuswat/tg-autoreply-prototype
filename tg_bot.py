@@ -26,6 +26,7 @@ REPLY = '''
 '''
 
 DELAY_HOURS = 12
+PERSONAL_CHAT_TYPE = 'PeerUser'
 
 messages_cache = {}
 
@@ -47,6 +48,9 @@ def is_working_time():
 @events.register(events.NewMessage(incoming=True))
 async def test_replyer(event):
     if is_working_time():
+        return
+
+    if not PERSONAL_CHAT_TYPE in str(event.message.peer_id):
         return
         
     user_id = event.message.sender_id
