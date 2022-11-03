@@ -24,7 +24,6 @@ REPLY = '''
 Но не переживайте, мы вам обязательно ответим!
 И в будущем ответы будут быстрее, качественнее и без выходных.
 '''
-# Тест можно ли импортировать комит.
 
 DELAY_HOURS = 12
 
@@ -70,7 +69,8 @@ async def test_replyer(event):
 if __name__ == '__main__':
     load_dotenv()
 
-    client = TelegramClient('test_session', api_id=os.environ['TG_API_ID'], api_hash=os.environ['TG_API_HASH'])
+    client = TelegramClient('test_session', api_id=os.environ['TG_API_ID'],
+                            api_hash=os.environ['TG_API_HASH'])
     client.start(phone=os.environ['PHONE_NUMBER'])
 
     with client:
